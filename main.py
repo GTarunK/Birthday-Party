@@ -1,5 +1,6 @@
 from fastapi import FastAPI,Request,Form
 from fastapi.templating import Jinja2Templates
+from models.users import UserModel
 
 tempaltes = Jinja2Templates(directory = "html_templates")
 
@@ -17,6 +18,6 @@ def root(id: int):
 
 @app.post('/save_form_data')
 def save_form_data(Name: str = Form(...),Year: str = Form(...),Month: str = Form(...),Day:str = Form(...)):
-        userBirthDays.append({"name":Name,"year":Year,"month":Month,"day":Day})
+        userBirthDays.append(UserModel(name = Name, year = Year, month = Month, day = Day))
         print(userBirthDays)
         
