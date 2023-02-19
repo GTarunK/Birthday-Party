@@ -1,22 +1,34 @@
-from fastapi import FastAPI,Request,Form
+from fastapi import FastAPI, Request, Form, status
 from fastapi.templating import Jinja2Templates
-
-tempaltes = Jinja2Templates(directory = "html_templates")
+from models.users import UserModel
+from fastapi.responses import RedirectResponse
+import os
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
+templates = Jinja2Templates(directory="html_templates")
+
+if not os.path.exists("static"):
+    os.makedirs("static")
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 userBirthDays = []
 
+
 @app.get('/')
 def root(request: Request):
-        return tempaltes.TemplateResponse("form.html", {"request":request})
+    return templates.TemplateResponse("form.html", {"request": request, "birthdays": userBirthDays})
 
-@app.get('/hi/{id}')
-def root(id: int):
-        return {"id": id}
 
 @app.post('/save_form_data')
-def save_form_data(Name: str = Form(...),Year: str = Form(...),Month: str = Form(...),Day:str = Form(...)):
-        userBirthDays.append({"name":Name,"year":Year,"month":Month,"day":Day})
-        print(userBirthDays)
-        
+def save_form_data(name: str = Form(...), year: str = Form(...), month: str = Form(...), day: str = Form(...)):
+    # userBirthDays.append(UserModel(name=name, year=year, month=month, day=day))
+    # print(userBirthDays)
+    # print(name,year,month,day)
+
+    data = UserModel(name=name, year=year, month=month, day=day)
+    userBirthDays.append(data)
+    print(data)
+    print(userBirthDays)
+    return RedirectResponse(url=app.url_path_for("root"), status_code=status.HTTP_303_SEE_OTHER)
