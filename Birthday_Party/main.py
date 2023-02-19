@@ -2,16 +2,12 @@ from fastapi import FastAPI, Request, Form, status
 from fastapi.templating import Jinja2Templates
 from models.users import UserModel
 from fastapi.responses import RedirectResponse
-import os
-from fastapi.staticfiles import StaticFiles
-
 app = FastAPI()
 templates = Jinja2Templates(directory="html_templates")
 
 if not os.path.exists("static"):
     os.makedirs("static")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 userBirthDays = []
 
